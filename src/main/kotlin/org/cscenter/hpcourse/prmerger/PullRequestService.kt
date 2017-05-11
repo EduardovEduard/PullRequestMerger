@@ -27,7 +27,11 @@ class Patcher(private val paths: SourcePaths) {
             return
         }
 
-        Files.write(Paths.get(paths.localtree, "patches", patchFileName), patch.toByteArray(), StandardOpenOption.CREATE_NEW)
+        val patchesDir = Paths.get(paths.localtree, "patches")
+        if (!Files.exists(patchesDir)) {
+            Files.createDirectory(patchesDir)
+        }
+        Files.write(Paths.get(patchesDir.toString(), patchFileName), patch.toByteArray(), StandardOpenOption.CREATE_NEW)
 
         val process = ProcessBuilder().directory(File(paths.localtree)).command(listOf(
                 "/bin/bash", "-c", "patch -p1 < patches/$patchFileName"
